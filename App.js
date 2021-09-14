@@ -1,17 +1,41 @@
-import React from 'react';
-import {View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList} from 'react-native'
+import React, {useState, useReducer} from 'react';
+import {View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList} from 'react-native';
+import {sha256} from  'react-native';
 
 
 export default function App1(){
 
-  const data = [
+  const initialState = [];
 
-    {id: 1, title: 'Arroz', check: false},
-    {id: 2, title: 'Farinha', check: false}
+ const reducer = (state, action) => {
+    
+  switch(action.type){
 
-  ]
+    case 'ADD':
+      return [...state, action.item]
+    case 'CHECK':
+      return state.map(item => {
+        if(item.id === action.id){
 
+          return{...item, check: !item.check}
 
+        }else{
+
+          return item;
+
+        }
+      });
+    case 'REMOVE':
+      return;
+    default:
+      return state; 
+  }
+
+  }
+
+  const [products, setProducts] = useState('');
+  const [state, dispatch] = useReducer (reducer, initialState);
+  
   return (
     <View >
 
@@ -19,9 +43,20 @@ export default function App1(){
 
         <TextInput
           placeholder="Adicionar produto"
-
+          value={products}
+          onChangeText={text => {setProducts(text)}}
         />
-        <TouchableOpacity>
+        <TouchableOpacity
+        onPress={() =>{
+         
+          dispatch({type: 'ADD', item: {
+            id: "1".products, title: products, check: false,
+          }})
+          
+          setProducts('');
+        }}
+        
+        >
           <Text>+</Text>
         </TouchableOpacity>
 
@@ -29,10 +64,20 @@ export default function App1(){
 
       <View>
         <FlatList 
-        data={data} 
+        data={state} 
         renderItem={({item}) =>(
 
-          <Text>{item.title}</Text>
+          <TouchableOpacity 
+          onPress = {
+            ()=> {
+              dispatch({type: 'CHECK', item: {
+                id: item.id,
+              }})
+            }
+          }
+          >
+            <Text>{item.id}</Text>
+          </TouchableOpacity>
 
         )}
         />
